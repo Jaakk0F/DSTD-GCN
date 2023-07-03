@@ -1,0 +1,175 @@
+# DSTDGCN
+# runner
+runner: cmu
+save:
+  path: # path options
+    base: runs/ # this needs to be defined in commandline
+    files: scripts/
+    checkpoints: checkpoints/ # a folder that records all the training and testing results
+    tensorboard: tensorboard/ # tensorbard results
+    visualize: visualize/
+  files: # a list of files to save
+    [
+      model/dstdgcn.py,
+      model/layers/graph.py,
+      model/layers/time.py,
+      engine/prediction.py,
+      runner/cmu.py,
+    ]
+train_batch_size: 32
+test_batch_size: 32
+num_workers: 4
+device: cuda
+epoch: 50
+mode: test # four modes: train, test, train-debug, test-debug
+
+# dataset options
+dataset:
+  name: cmu
+  scale: False
+  train:
+    cmu:
+      data_path: data/cmu/train
+      input_n: 10 # length of input sequence
+      output_n: 25 #
+      dct_used: 0 # dct dimension, use dct transformation when this is larger than 0
+      sample_rate: 2 # sample rate
+      data_3d: True # load 3D data
+      test_mode: all
+      mirror: True
+  test:
+    cmu:
+      data_path: data/cmu/test
+      input_n: 10 # length of input sequence
+      output_n: 25 #
+      dct_used: 0 # dct dimension, use dct transformation when this is larger than 0
+      sample_rate: 2
+      data_3d: True
+      test_mode: all
+      mirror: False
+
+# experiment setting
+setting:
+  input_n: 10
+  output_n: 25
+  eval_frame: [1, 3, 7, 9, 13, 17, 21, 24] # [1, 3, 7, 9]
+  dim_used:
+    [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      84,
+      85,
+      86,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      111,
+      112,
+      113,
+    ]
+  joint_to_ignore: [16, 20, 29, 24, 27, 33, 36]
+  joint_to_equal: [15, 15, 15, 23, 23, 32, 32]
+  save: False # save result for each iteration
+
+# model options
+# define one randomly, this will not be used
+model:
+  name: dstdgcn
+  load: True
+  ckpt: runs/20220319_dstdgcn_cmu_train_motion_mirror_rinit/checkpoints/best.pth
+  dstdgcn:
+    input_channels: 6
+    input_time_frame: 10
+    output_time_frame: 25
+    st_gcnn_dropout: 0.1
+    joints_to_consider: 25
+    num_feature: 64
+    num_layers: 5
+    layout: cmu
+
+# training engine
+engine:
+  learn:
+    opt: adam
+    lr: 3.e-3 # 5.e-3
+    beta1: 0.5 # params for Adam optim
+    beta2: 0.999 # params for Adam optim
+    weight_decay: 1.e-4
+    gamma: 0.9 # 0.9 # learning rate decay
+    step_size: 5 # 5 # means no learning rate decay
+    patience: 5
+    factor: 0.5
+  loss:
+    joint: [jl2, 1] # mpjpe_error on 3d space (l2 loss)
+    # gm: [gm2, 1000] # gram matrix loss
+    # bone: [bl2, 1] # bone loss
+    # transition: [tl2, 1] # transition loss
+    # coordinate: [cl1, 1] # joint l1 loss
+  n_out: 1
+  transform: tsc # dimension tranformation
+  use_weight: False # body weights
+  inverse: True # inverse

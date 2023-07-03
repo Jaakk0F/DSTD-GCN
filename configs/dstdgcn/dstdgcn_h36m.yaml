@@ -1,0 +1,166 @@
+# DSTDGCN
+# runner
+runner: h36m
+save: # Save scripts options.
+  path: # Path options.
+    base: runs/ # The base directory of the base results.
+    files: scripts/ # A folder under base to store scripts.
+    checkpoints: checkpoints/ # A folder under base that records all the training and testing results.
+    tensorboard: tensorboard/ # A folder to store tensorboard results # NOT support yet.
+  files: # A list of files to save, please use relative path here.
+    [
+      model/dstdgcn.py,
+      model/layers/graph.py,
+      model/layers/time.py,
+      engine/prediction.py,
+      runner/cmu.py,
+    ]
+train_batch_size: 32 # Training batch size.
+test_batch_size: 32 # Testing batch size.
+num_workers: 4 # Number of workers for the dataloader.
+device: cuda # cuda / cpu.
+epoch: 50 #  Number of iteration.
+mode: train-debug # four modes: train, test, train-debug, test-debug, the debug mode will only process a tiny portion of data.
+
+# Dataset options.
+dataset:
+  name: h36m # Dataset name.
+  scale: True # Scale normalization.
+  train: # Training dataset setting.
+    h36m: # This needs to be the same as `name` under the `dataset`.
+      data_path: data/h36m # Dataset path.
+      actions: all # Actions to load.
+      input_n: 10 # Length of input sequence.
+      output_n: 25 # Length of the output length.
+      dct_used: 0 # dct dimension, use dct transformation when this is larger than 0
+      mode: train # Dataset split selection.
+      sample_rate: 2 # Sample rate.
+      data_3d: True # Load 3D data or angle data.
+      mirror: False # Mirror the whole sequence.
+  test: # Validation dataset setting.
+    h36m: # This needs to be the same as `name` under the `dataset`.
+      data_path: data/h36m/
+      input_n: 10 # Length of input sequence.
+      output_n: 25 # Length of the output sequence.
+      dct_used: 0 # dct dimension, use dct transformation when this is larger than 0.
+      mode: test # Dataset split selection.
+      sample_rate: 2 # Sample rate.
+      data_3d: True # Load 3D data or angle data.
+      test_mode: all # Test sequence mode 8, 256, all.
+      mirror: False # Mirror the whole sequence.
+
+# Experiment setting
+setting:
+  input_n: 10 # Length of input sequence. NOTE: Same as the dataset configuration.
+  output_n: 25 # Length of the output sequence. NOTE: ame as the dataset configuration.
+  eval_frame: [1, 3, 7, 9, 13, 17, 21, 24] # Frame index (started from 0) for metric calculation.
+  dim_used:  # Dimension to calculate metrics. NOTE: this is different from the joint index.
+    [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+    ]
+  joint_to_ignore: [16, 20, 23, 24, 28, 31]  # Joint index to ignore.
+  joint_to_equal: [13, 19, 22, 13, 27, 30] # Joint index to pad the ignore joints. NOTE: same length as `joint_to_ignore`.
+  save: False # Save result for each iteration.
+
+# Model options
+model:
+  name: dstdgcn  # Model name. 
+  load: False  # Load checkpoint.
+  ckpt: None  # Checkpoint path.
+  dstdgcn: # Configuration of the model. Needs to be same as `name` under `model`.
+    input_channels: 6  # Input channel number.
+    input_time_frame: 10 # Length of input frames. NOTE: same as input length in the dataset setting.
+    output_time_frame: 25 # Length of output frames. NOTE: same as input length in the dataset setting.
+    st_gcnn_dropout: 0.1  # Dropout in the network
+    joints_to_consider: 22  # Number of human joints. NOTE: set according to different datasets.
+    num_feature: 64  # Feature dimension in the model.
+    num_layers: 5  # Number of network layers.
+    layout: h36m
+
+# training engine
+engine:
+  learn:
+    opt: adam
+    lr: 5.e-3
+    beta1: 0.5 # params for Adam optim
+    beta2: 0.999 # params for Adam optim
+    weight_decay: 1.e-4
+    gamma: 0.96 # learning rate decay
+    step_size: 1 # means no learning rate decay
+    patience: 4
+    factor: 0.5
+  loss:
+    joint: [jl2, 1] # mpjpe_error on 3d space
+    # gm: [gm2, 1000] # gram matrix loss
+    # bone: [bl2, 1] # bone loss
+    # transition: [tl2, 1] # transition loss
+    # coordinate: [cl1, 1] # joint loss
+  n_out: 1
+  transform: tsc # dimension tranformation
+  use_weight: False # body weights
+  inverse: True # inverse
