@@ -406,7 +406,7 @@ class BaseRunner:
                   header=head_test,
                   index=False)
 
-    def run_visualize(self):
+    def run_visualize(self, dataset):
         max_seqs = 8
         # dataset
         # get transform from train dataset
@@ -427,7 +427,7 @@ class BaseRunner:
         # manually set the scaler in test dataset
         test_data_config[dataset_name]["scaler"] = train_dataset.scale_tsfm
 
-        vis_runner = Visualizer("cmu")
+        vis_runner = Visualizer(dataset)
 
         # 8 sequence mode
         for act in test_acts:

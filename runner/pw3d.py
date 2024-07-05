@@ -354,4 +354,4 @@ class PW3DRunner:
             else:
                 self.run_test()
         else:
-            self.run_visualize()
+            self.run_visualize("3dpw")

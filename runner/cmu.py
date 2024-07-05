@@ -365,4 +365,4 @@ class CMURunner(BaseRunner):
         elif "test" in mode:
             self.run_test()
         else:
-            raise NotImplementedError(f"Invalid mode {mode}")
+            self.run_visualize("cmu")
