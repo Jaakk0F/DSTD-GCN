@@ -1,21 +1,21 @@
 export CUDA_VISIBLE_DEVICES=0
 cd ..
 
-# variables
+# Variables
 time=$(date "+%Y%m%d")
-exp_name=${time}_"dstdgcn_3dpw_train_motion_in10out30_pgbig_metric"
+exp_name=${time}_"dstdgcn_3dpw"
 save_dir="runs/"$exp_name
 
-# check save directory
+# Check save directory
 if [ ! -d ${save_dir} ]; then
     mkdir -p ${save_dir}
 fi
 
-# scripts
-# training
-# python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw.yaml
-# nohup python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw.yaml > ${save_dir}/out.log 2>&1 &
+# Scripts
+# Training
+python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw.yaml
 
-# testing
-# exp_name="20211202_DSTDGCN_default_train_scene1"
+# Testing
+# By default, it will load the pretrained checkpoint
+# For your own checkpoint, please modify the `ckpt` in the config file
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw_test.yaml

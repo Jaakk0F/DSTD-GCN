@@ -1,9 +1,5 @@
-import os
-import pdb
 import random
-import shutil
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
@@ -12,19 +8,10 @@ from torch.utils.data import DataLoader
 
 from .base import BaseRunner
 
-def setup_seed(seed):
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.backends.cudnn.deterministic = True
-
 
 class H36MRunner(BaseRunner):
 
     def __init__(self, config):
-        # read config from path
-        # update config
         super().__init__(config)
 
     def run_train(self):
@@ -96,6 +83,7 @@ class H36MRunner(BaseRunner):
                 train_dataset.scale_tsfm,
                 train_dataset.joint_weight_use
                 if self.config["engine"]["use_weight"] else None,
+                self.config["engine"]["max_iter"] 
             )
             ret_log_train = np.append(ret_log_train,
                                       [self.engine.lr, train_loss])
@@ -368,4 +356,4 @@ class H36MRunner(BaseRunner):
             else:
                 self.run_test()
         else:
-            self.run_visualize("h36m")
+            self.run_visualize()

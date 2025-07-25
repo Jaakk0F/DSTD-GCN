@@ -26,7 +26,7 @@ mode: train # four modes: train, test, train-debug, test-debug
 # dataset options
 dataset:
   name: cmu
-  scale: True
+  scale: False
   train:
     cmu:
       data_path: data/cmu/train
@@ -155,14 +155,10 @@ model:
 engine:
   learn:
     opt: adam
-    lr: 3.e-3 # 5.e-3
-    beta1: 0.5 # params for Adam optim
-    beta2: 0.999 # params for Adam optim
-    weight_decay: 1.e-4
+    lr: 3.e-3 # learning rate
+    weight_decay: 0 # params for Adam, weights for l2 norm
     gamma: 0.9 # 0.9 # learning rate decay
     step_size: 5 # 5 # means no learning rate decay
-    patience: 5
-    factor: 0.5
   loss:
     joint: [jl2, 1] # mpjpe_error on 3d space (l2 loss)
     # gm: [gm2, 1000] # gram matrix loss

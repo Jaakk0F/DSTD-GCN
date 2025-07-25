@@ -1,0 +1,15 @@
+export CUDA_VISIBLE_DEVICES=0
+cd ..
+
+# Variables
+time=$(date "+%Y%m%d")
+exp_name=${time}_"visualize_3dpw"
+save_dir="runs/"$exp_name
+
+# Check save directory
+if [ ! -d ${save_dir} ]; then
+    mkdir -p ${save_dir}
+fi
+
+# Scripts
+python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/visualize/visualize_3dpw.yaml

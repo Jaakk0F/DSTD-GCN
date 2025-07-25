@@ -14,14 +14,14 @@ save:
       model/layers/graph.py,
       model/layers/time.py,
       engine/prediction.py,
-      runner/cmu.py,
+      runner/h36m.py,
     ]
 train_batch_size: 32
 test_batch_size: 32
 num_workers: 4
 device: cuda
 epoch: 100
-mode: test-visualize-all # four modes: train, test, train-debug, test-debug, test-visualize
+mode: test # modes: train, test, train-debug, test-debug, test-visualize, test-visualize-all
 
 # dataset options
 dataset:
@@ -132,7 +132,7 @@ setting:
 model:
   name: dstdgcn
   load: True
-  ckpt: runs/20220320_dstdgcn_h36m_train_motion_mirror_rinit/checkpoints/best.pth
+  ckpt: milestone/h36m.pth
   dstdgcn:
     input_channels: 6
     input_time_frame: 10
@@ -148,13 +148,9 @@ engine:
   learn:
     opt: adam
     lr: 5.e-4
-    beta1: 0.5 # params for Adam optim
-    beta2: 0.999 # params for Adam optim
     weight_decay: 1.e-4
     gamma: 0.95 # learning rate decay
     step_size: 5 # means no learning rate decay
-    patience: 10
-    factor: 0.5
   loss:
     joint: [jl2, 1] # mpjpe_error on 3d space
     # gm: [gm2, 1000] # gram matrix loss
@@ -165,3 +161,4 @@ engine:
   transform: tsc # dimension tranformation
   use_weight: False # body weights
   inverse: True # inverse
+  max_iter: -1 # max iteractions for individual training epoch

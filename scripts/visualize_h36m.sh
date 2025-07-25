@@ -13,4 +13,3 @@ fi
 
 # scripts
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/visualize/visualize_h36m.yaml
-# nohup python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/visualize/visualize_h36m.yaml > ${save_dir}/out.log 2>&1 &

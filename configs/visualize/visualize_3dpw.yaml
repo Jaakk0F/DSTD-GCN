@@ -21,7 +21,7 @@ test_batch_size: 32
 num_workers: 4
 device: cuda
 epoch: 100
-mode: test # four modes: train, test, train-debug, test-debug
+mode: visualize
 
 # dataset options
 dataset:
@@ -123,14 +123,14 @@ setting:
     ]
   joint_to_ignore: null
   joint_to_equal: null
-  save: True # save result for each iteration
+  save: False # save result for each iteration
 
 # model options
 # define one randomly, this will not be used
 model:
   name: dstdgcn
-  load: True
-  ckpt: milestone/3dpw.pth
+  load: False
+  ckpt: None
   dstdgcn:
     input_channels: 6
     input_time_frame: 10
@@ -145,18 +145,21 @@ model:
 engine:
   learn:
     opt: adam
-    lr: 3.e-3 # learning rate
-    weight_decay: 0 # params for Adam, weights for l2 norm
-    gamma: 0.9 # 0.9 # learning rate decay
-    step_size: 5 # 5 # means no learning rate decay
+    lr: 5.e-4
+    beta1: 0.5 # params for Adam optim
+    beta2: 0.999 # params for Adam optim
+    weight_decay: 1.e-4
+    gamma: 0.95 # learning rate decay
+    step_size: 5 # means no learning rate decay
+    patience: 10
+    factor: 0.5
   loss:
-    joint: [jl2, 1] # mpjpe_error on 3d space (l2 loss)
+    joint: [jl2, 1] # mpjpe_error on 3d space
     # gm: [gm2, 1000] # gram matrix loss
     # bone: [bl2, 1] # bone loss
     # transition: [tl2, 1] # transition loss
-    # coordinate: [cl1, 1] # joint l1 loss
+    # coordinate: [cl1, 1] # joint loss
   n_out: 1
   transform: tsc # dimension tranformation
   use_weight: False # body weights
   inverse: True # inverse
-  max_iter: -1 # max iteractions for individual training epoch

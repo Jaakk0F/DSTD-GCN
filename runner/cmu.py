@@ -1,6 +1,5 @@
 import random
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
@@ -8,13 +7,6 @@ from dataset import define_actions, get_dataset
 from torch.utils.data import DataLoader
 
 from .base import BaseRunner
-
-def setup_seed(seed):
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.backends.cudnn.deterministic = True
 
 
 class CMURunner(BaseRunner):
@@ -365,4 +357,4 @@ class CMURunner(BaseRunner):
         elif "test" in mode:
             self.run_test()
         else:
-            self.run_visualize("cmu")
+            self.run_visualize()

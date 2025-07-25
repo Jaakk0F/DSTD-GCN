@@ -3,9 +3,8 @@
 @author:  Jiajun Fu
 @contact: Jaakk0F@foxmail.com
 """
-import pdb
-import time
 
+import pdb
 import numpy as np
 import torch
 import torch.nn as nn
@@ -166,7 +165,6 @@ class PredictionEngine:
             self.model.load_state_dict(state["model"])
             self.optimizer.load_state_dict(state["optimizer"])
             self.lr = state["lr"]
-        # print("load from lr {}, curr_avg {}.".format(state["lr"], err))
         self.logger.info("load from lr {}, curr_avg {} from {}.".format(state["lr"], err, checkpoint_path))
         return epoch, err
 
@@ -190,45 +188,12 @@ class PredictionEngine:
             optimizer = optim.Adam(
                 params,
                 lr=self.config["learn"]["lr"],
-                # betas=(self.config["learn"]["beta1"],
-                #        self.config["learn"]["beta2"]),
-                # weight_decay=self.config["learn"]["weight_decay"],
+                weight_decay=self.config["learn"]["weight_decay"],
             )
             scheduler = optim.lr_scheduler.StepLR(optimizer,
                                                   step_size=self.config["learn"]["step_size"],
                                                   gamma=self.config["learn"]["gamma"])
-            # scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            #     optimizer,
-            #     'min',
-            #     patience=self.config["learn"]["patience"],
-            #     factor=self.config["learn"]["factor"],
-            #     threshold=1e-5,
-            # )
             return optimizer, scheduler
-
-    # def transform(self, data):
-    #     # define data transformation here
-    #     def transform_helper(data):
-    #         data = data.permute(0, 2, 1).contiguous()
-    #         return data
-
-    #     if isinstance(data, list):
-    #         data = (transform_helper(d) for d in data)
-    #     else:
-    #         data = transform_helper(data)
-    #     return data
-
-    # def inverse(self, data):
-    #     # define data transformation here
-    #     def inverse_helper(data):
-    #         data = data.permute(0, 2, 1).contiguous()
-    #         return data
-
-    #     if isinstance(data, list):
-    #         data = (inverse_helper(d) for d in data)
-    #     else:
-    #         data = inverse_helper(data)
-    #     return data
 
     def train(
         self,
@@ -237,13 +202,16 @@ class PredictionEngine:
         time_tsfm=None,
         scale_tsfm=None,
         weights=None,
+        max_iter=-1,
     ):
         # if (epoch + 1) % self.config["lr_decay"] == 0:
         #     self.lr = lr_decay(self.optimizer, self.lr,
         #                        self.config["lr_gamma"])
         t_l = {key_loss: AccumLoss() for key_loss in self.config["loss"]}
         self.model.train()
-        loop = tqdm(enumerate(train_loader), total=len(train_loader), leave=True)
+        
+        num_iter = len(train_loader) if max_iter == -1 else min(len(train_loader), max_iter)
+        loop = tqdm(enumerate(train_loader), total=num_iter, leave=True)
         for i, (inputs, inputs_inv, targets, all_seqs) in loop:
             # cpu to gpu
             if isinstance(inputs, list):
@@ -326,10 +294,15 @@ class PredictionEngine:
             self.optimizer.step()
 
             # show each loss
-            desc = f"epoch: {epoch + 1}|[{i + 1}/{len(train_loader)}]|train|"
+            desc = f"epoch: {epoch + 1}|[{i + 1}/{num_iter}]|train|"
             for ls in loss:
                 desc += "{}:{:.2f}|".format(ls, t_l[ls].avg)
             loop.set_description(desc)
+            
+            # break
+            if i >= num_iter - 1:
+                break
+            
         # update log with the last description
         self.logger.info(desc)
 
@@ -368,7 +341,6 @@ class PredictionEngine:
         with torch.no_grad():
             loop = tqdm(enumerate(test_loader), total=len(test_loader), leave=True)
             for i, (inputs, _, _, all_seqs) in loop:
-                # if i != 253: continue
                 # cpu to gpu
                 if isinstance(inputs, list):
                     inputs = [input.float().cuda(non_blocking=True) for input in inputs]
@@ -411,10 +383,8 @@ class PredictionEngine:
                         pred_3d[:, :, :] = outputs_3d
                 if not np.any(joint_to_ignore == None):
                     assert joint_to_ignore.shape == joint_equal.shape
-                    # joint_to_ignore = np.array([16, 20, 23, 24, 28, 31])
                     index_to_ignore = np.concatenate(
                         (joint_to_ignore * 3, joint_to_ignore * 3 + 1, joint_to_ignore * 3 + 2))
-                    # joint_equal = np.array([13, 19, 22, 13, 27, 30])
                     index_to_equal = np.concatenate((joint_equal * 3, joint_equal * 3 + 1, joint_equal * 3 + 2))
                     pred_3d[:, :, index_to_ignore] = pred_3d[:, :, index_to_equal]
                 pred_p3d = pred_3d.contiguous()
@@ -446,7 +416,6 @@ class PredictionEngine:
                                             np.array([], pred_append.dtype).reshape((0,) + pred_append.shape[1:]))
                     pred = np.concatenate((pred, pred_append), axis=0)
                     save_results["result"] = pred
-
                     targ_append = targ_p3d.cpu().numpy()
                     targ = save_results.get("target",
                                             np.array([], targ_append.dtype).reshape((0,) + targ_append.shape[1:]))

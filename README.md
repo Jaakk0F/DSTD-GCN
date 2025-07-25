@@ -47,7 +47,7 @@ As a reference, the folder structure should look like:
 ```bash
 ├── data
     ├── cmu        # CMU Mocap
-    ├── human3.6m  # Human3.6M
+    ├── h36m       # Human3.6M
     └── 3dpw       # 3DPW
 ```
 
@@ -61,7 +61,7 @@ As a reference, the folder structure should look like:
 
 ## Training & Evaluation
 
-For all the training and evaluation codes, we provide scripts below. Besides, you can also find running scripts under `scripts/`
+For all the training and evaluation codes, we provide scripts below. Besides, you can also find running scripts under `scripts/`.
 
 <details>
 <summary>
@@ -70,7 +70,7 @@ Human3.6M
 
 ```bash
 # This scripts can be found in `scripts/dstdgcn_h36m.sh`
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 
 # Variables
 time=$(date "+%Y%m%d")
@@ -87,6 +87,8 @@ fi
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_h36m.yaml
 
 # Testing
+# By default, it will load the pretrained checkpoint
+# For your own checkpoint, you should change `ckpt` in the config file
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_h36m_test.yaml
 ```
 
@@ -99,7 +101,7 @@ CMU Mocap
 
 ```bash
 # This scripts can be found in `scripts/dstdgcn_3dpw.sh`
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 
 # Variables
 time=$(date "+%Y%m%d")
@@ -116,6 +118,8 @@ fi
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_cmu.yaml
 
 # Testing
+# By default, it will load the pretrained checkpoint
+# For your own checkpoint, you should change `ckpt` in the config file
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_cmu_test.yaml
 ```
 
@@ -128,11 +132,11 @@ python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dst
 
 ```bash
 # This scripts can be found in `scripts/dstdgcn_3dpw.sh`
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 
 # Variables
 time=$(date "+%Y%m%d")
-exp_name=${time}_"dstdgcn_3dpw"  # # Specify your own experiment name.
+exp_name=${time}_"dstdgcn_3dpw"  # Specify your own experiment name
 save_dir="runs/"$exp_name
 
 # Check save directory
@@ -145,10 +149,17 @@ fi
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw.yaml
 
 # Testing
+# By default, it will load the pretrained checkpoint
+# For your own checkpoint, you should change `ckpt` in the config file
 python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dstdgcn/dstdgcn_3dpw_test.yaml
 ```
 
 </details>
+
+We also provide pretrained model checkpoints, which can be downloaded from [Google Drive](https://drive.google.com/drive/folders/15tslitKrNVPmmfWekPQbz8Vr--i1QS_J?usp=sharing) or [Baidu Netdisk (extraction code: dstd)](https://pan.baidu.com/s/1DBPFgDx-fKheNs1T-GZTZw?pwd=dstd). Please download the checkpoints and place it under `milestone/`.
+
+通过网盘分享的文件：3dpw.pth等3个文件
+链接:  提取码: dstd
 
 ## Cutomization
 
@@ -161,7 +172,7 @@ Customize your own model.
 
 The first step is to setup your own dataset file under `model/`. Create an dataset python class scripts. You can check example data files under the `model`/. You can customize the variable for the class constructor. You can define the model layers under `model/layers/` Don't forget to add reference in `model/__init__.py`.
 
-The final step is to customize the configuration file under `config/`. You need to change the `model` items. The `name` value should map the key in in `model/__init__.py`. The configuration under the model name should match the variable in the model constructor function. We provide an annotated examples as `config/dstdgcn_h36m.py`.
+The final step is to customize the configuration file under `config/`. You need to change the `model` items. The `name` value should map the key in in `model/__init__.py`. The configuration under the model name should match the variable in the model constructor function. We provide an annotated examples as `config/dstdgcn/dstdgcn_h36m.yaml`.
 
 </details>
 
@@ -170,7 +181,7 @@ The final step is to customize the configuration file under `config/`. You need 
 Customize your own dataset.
 </summary>
 
-The first step is to setup your own dataset file under `dataset/`. Create an dataset python class scripts. You can check example data files under the `dataset`/. You can customize the variable for the class constructor. Don't forget to add reference in `dataset/__init__.py`.
+The first step is to setup your own dataset file under `dataset/`. Create an dataset python class scripts. You can check example data files under the `dataset/`. You can customize the variable for the class constructor. Don't forget to add reference in `dataset/__init__.py`.
 
 The next step is to customize the runner. You can check scripts under `runner/` for reference. Your own runner should inherit the `BaseRunner`. Specifically, you need to specify two functions `run_train` and `run_test`. This function defines what the runner actually do for each epoch.
 
@@ -184,7 +195,7 @@ The final step is to customize the configuration file under `config/`. There are
 
 ## TODOS
 
-- [ ] Model checkpoints
+- [x] Model checkpoints
 - [x] Customization codes
 
 ## Citation
@@ -196,11 +207,14 @@ If you find this project contributes to your work, please cite the following pap
   author={Fu, Jiajun and Yang, Fuxing and Dang, Yonghao and Liu, Xiaoli and Yin, Jianqin},
   journal={IEEE Transactions on Neural Networks and Learning Systems},
   title={Learning Constrained Dynamic Correlations in Spatiotemporal Graphs for Motion Prediction},
-  year={2023},
-  doi={10.1109/TNNLS.2023.3277476}
+  year={2024},
+  doi={10.1109/TNNLS.2023.3277476},
+  volume={35},
+  number={10},
+  pages={14273-14287}
 }
 ```
 
 ## Acknowledgements
 
-Some of the codes are from [STS-GCN](https://github.com/FraLuca/STSGCN), [LearnTrajDep](https://github.com/wei-mao-2019/LearnTrajDep) and [MSR-GCN](https://github.com/Droliven/MSRGCN). We really thank the authors for their wonderful works. Besides, this project is developed based on the [template](https://github.com/L1aoXingyu/Deep-Learning-Project-Template).
+Some of the codes are from [STS-GCN](https://github.com/FraLuca/STSGCN), [LearnTrajDep](https://github.com/wei-mao-2019/LearnTrajDep) and [MSR-GCN](https://github.com/Droliven/MSRGCN). Besides, this project is developed based on the [template](https://github.com/L1aoXingyu/Deep-Learning-Project-Template). We really thank the authors for their wonderful works.

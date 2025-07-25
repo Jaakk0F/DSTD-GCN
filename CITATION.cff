@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Fu
+    given-names: Jiajun
+  - family-names: Yang
+    given-names: Fuxing
+  - family-names: Dang
+    given-names: Yonghao
+  - family-names: Liu
+    given-names: Xiaoli
+  - family-names: Yin
+    given-names: Jianqin
+title: "Learning Constrained Dynamic Correlations in Spatiotemporal Graphs for Motion Prediction"
+version: 1.0.0
+doi: 10.1109/TNNLS.2023.3277476
+date-released: 2023-05-31
+journal: "IEEE Transactions on Neural Networks and Learning Systems"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Fu
+      given-names: Jiajun
+    - family-names: Yang
+      given-names: Fuxing
+    - family-names: Dang
+      given-names: Yonghao
+    - family-names: Liu
+      given-names: Xiaoli
+    - family-names: Yin
+      given-names: Jianqin
+  title: "Learning Constrained Dynamic Correlations in Spatiotemporal Graphs for Motion Prediction"
+  journal: "IEEE Transactions on Neural Networks and Learning Systems"
+  volume: 35
+  number: 10
+  pages: "14273-14287"
+  year: 2024
+  doi: 10.1109/TNNLS.2023.3277476

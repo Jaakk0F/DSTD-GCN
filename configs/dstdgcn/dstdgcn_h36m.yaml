@@ -13,19 +13,19 @@ save: # Save scripts options.
       model/layers/graph.py,
       model/layers/time.py,
       engine/prediction.py,
-      runner/cmu.py,
+      runner/h36m.py,
     ]
 train_batch_size: 32 # Training batch size.
 test_batch_size: 32 # Testing batch size.
 num_workers: 4 # Number of workers for the dataloader.
 device: cuda # cuda / cpu.
-epoch: 50 #  Number of iteration.
-mode: train-debug # four modes: train, test, train-debug, test-debug, the debug mode will only process a tiny portion of data.
+epoch: 50 #  Number of epochs.
+mode: train # modes: train, test, train-debug, test-debug, the debug mode will only process a tiny portion of data.
 
 # Dataset options.
 dataset:
   name: h36m # Dataset name.
-  scale: True # Scale normalization.
+  scale: False # Scale normalization.
   train: # Training dataset setting.
     h36m: # This needs to be the same as `name` under the `dataset`.
       data_path: data/h36m # Dataset path.
@@ -36,7 +36,7 @@ dataset:
       mode: train # Dataset split selection.
       sample_rate: 2 # Sample rate.
       data_3d: True # Load 3D data or angle data.
-      mirror: False # Mirror the whole sequence.
+      mirror: True # Mirror the whole sequence.
   test: # Validation dataset setting.
     h36m: # This needs to be the same as `name` under the `dataset`.
       data_path: data/h36m/
@@ -146,14 +146,10 @@ model:
 engine:
   learn:
     opt: adam
-    lr: 5.e-3
-    beta1: 0.5 # params for Adam optim
-    beta2: 0.999 # params for Adam optim
-    weight_decay: 1.e-4
-    gamma: 0.96 # learning rate decay
-    step_size: 1 # means no learning rate decay
-    patience: 4
-    factor: 0.5
+    lr: 3.e-3 # learning rate
+    weight_decay: 0 # params for Adam, weights for l2 norm
+    gamma: 0.9 # learning rate decay
+    step_size: 5 # means no learning rate decay
   loss:
     joint: [jl2, 1] # mpjpe_error on 3d space
     # gm: [gm2, 1000] # gram matrix loss
@@ -164,3 +160,4 @@ engine:
   transform: tsc # dimension tranformation
   use_weight: False # body weights
   inverse: True # inverse
+  max_iter: 2000 # max iteractions for individual training epoch, -1 means full dataset length

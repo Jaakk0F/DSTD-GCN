@@ -205,16 +205,6 @@ class Graph:
                 self.bone_pair.append([use_joint[bp[0]], use_joint[bp[1]]])
             for pp in part_pair:
                 self.part_pair.append([use_joint[pp[0]], use_joint[pp[1]]])
-        elif layout == "expi":
-            # 18 joint per person
-            I = np.array([0, 0, 0, 3, 4, 6, 3, 5, 7, 3, 10, 12, 14, 3, 11, 13, 15])
-            J = np.array([1, 2, 3, 4, 6, 8, 5, 7, 9, 10, 12, 14, 16, 11, 13, 15, 17])
-            self.num_joint = 2 * (max(np.max(I), np.max(J)) + 1)
-            self.bone_pair = []
-            self.part_pair = []
-            n_iter = len(I)
-            for i in range(n_iter):
-                self.bone_pair.extend([[I[i], J[i]], [I[i] + self.num_joint // 2, J[i] + self.num_joint // 2]])
         elif layout == "3dpw":
             # this is 25 point version
             bone_pair = [
@@ -245,9 +235,6 @@ class Graph:
                 (19, 21),
                 (20, 22),
                 (21, 23),
-                # self-defined
-                (9, 14),
-                (3, 14),
             ]
             use_joint = {
                 1: 0,
@@ -286,12 +273,18 @@ class Graph:
                 (20, 21),
                 (22, 23),
                 # leg & arm
+                (16, 1),
+                (16, 2),
+                (14, 1),
+                (14, 2),
                 (18, 4),
+                (18, 5),
+                (19, 4),
                 (19, 5),
                 (20, 7),
+                (20, 8),
+                (21, 7),
                 (21, 8),
-                (22, 10),
-                (23, 11),
             }
             self.num_joint = len(use_joint)
             self.bone_pair = []
