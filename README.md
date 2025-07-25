@@ -158,9 +158,6 @@ python main.py --exp_name ${exp_name} --run_dir ${save_dir} --config configs/dst
 
 We also provide pretrained model checkpoints, which can be downloaded from [Google Drive](https://drive.google.com/drive/folders/15tslitKrNVPmmfWekPQbz8Vr--i1QS_J?usp=sharing) or [Baidu Netdisk (extraction code: dstd)](https://pan.baidu.com/s/1DBPFgDx-fKheNs1T-GZTZw?pwd=dstd). Please download the checkpoints and place it under `milestone/`.
 
-通过网盘分享的文件：3dpw.pth等3个文件
-链接:  提取码: dstd
-
 ## Cutomization
 
 You can also develop your own method or set up your own dataset in this project.
